@@ -1,0 +1,65 @@
+version: '3.7'
+
+services:
+  test:
+    container_name: cost-server-test
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: test
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+    ports:
+      - "${PORT}:${PORT}"
+    command: npm run test
+
+  dev:
+    container_name: cost-server-dev
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+    ports:
+      - "${PORT}:${PORT}"
+    command: npm run start:dev
+    restart: always
+
+  prod:
+    container_name: cost-server-prod
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: prod
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+    ports:
+      - "${PORT}:${PORT}"
+    command: npm run start:prod
+    restart: always
+
+  postgres:
+    container_name: cost-postgres
+    image: postgres:latest
+    env_file:
+      - .env
+    environment:
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:
