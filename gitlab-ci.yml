@@ -1,0 +1,25 @@
+stages:
+  - build
+  - test
+  - deploy
+
+before_script:
+  - cp $ENV_FILE .env
+
+clear:
+  stage: build
+  script:
+    - sudo docker-compose down --rmi local --remove-orphans
+    - sudo docker system prune --all --force
+    - sudo docker network ls
+
+test:
+  stage: test
+  script:
+    - COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 sudo docker-compose up --build --exit-code-from test test
+
+deploy:
+  stage: deploy
+  script:
+    - sudo docker-compose down
+    - COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 sudo docker-compose up --build -d prod
