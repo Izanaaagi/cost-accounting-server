@@ -29,6 +29,8 @@ services:
       - postgres
     ports:
       - "${PORT}:${PORT}"
+    env_file:
+      - .env
     command: npm run start:dev
     restart: always
 
@@ -45,37 +47,29 @@ services:
       - postgres
     ports:
       - "${PORT}:${PORT}"
-    command: npm run start:prod
+    env_file:
+      - .env
+    command: sh -c "npm run build && npm run start:prod"
     restart: always
+    networks:
+      - cost-network
 
   nginx:
-    image: nginx:1.15-alpine
-    networks:
-      - ssl-network
-    depends_on:
-      - certbot
+    image: nginx:mainline-alpine
+    container_name: cost-nginx
+    restart: unless-stopped
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./nginx:/etc/nginx/conf.d
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-  certbot:
-    image: certbot/certbot:arm64v8-nightly
     networks:
-      - ssl-network
-    depends_on:
-      - prod
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+      - cost-network
 
   postgres:
     container_name: cost-postgres
     image: postgres:latest
+    depends_on:
+      - nginx
     env_file:
       - .env
     environment:
@@ -85,9 +79,12 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
+    networks:
+      - cost-network
 
 volumes:
   pgdata:
 
 networks:
-  ssl-network:
+  cost-network:
+    driver: bridge

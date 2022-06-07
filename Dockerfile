@@ -15,4 +15,4 @@ CMD ["npm", "run", "start:dev"]
 FROM base as prod
 RUN npm ci --production
 COPY . .
-CMD ["npm", "run", "start:prod"]
+CMD ["npm", "run", "build"]
