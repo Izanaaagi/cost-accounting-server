@@ -15,6 +15,8 @@ services:
     ports:
       - "${PORT}:${PORT}"
     command: npm run test
+    networks:
+      - cost-network
 
   dev:
     container_name: cost-server-dev
@@ -33,6 +35,29 @@ services:
       - .env
     command: npm run start:dev
     restart: always
+    networks:
+      - cost-network
+
+  debug:
+    container_name: cost-server-debug
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+    ports:
+      - "${PORT}:${PORT}"
+      - "9229:9229"
+    env_file:
+      - .env
+    command: npm run start:debug
+    restart: always
+    networks:
+      - cost-network
 
   prod:
     container_name: cost-server-prod
