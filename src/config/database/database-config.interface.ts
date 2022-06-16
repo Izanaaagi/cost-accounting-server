@@ -5,4 +5,6 @@ export interface DatabaseConfig {
   username: string;
   password: string;
   synchronize: boolean;
+  autoLoadEntities: boolean;
+  entities: string[];
 }

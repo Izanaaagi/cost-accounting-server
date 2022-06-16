@@ -11,5 +11,7 @@ export const databaseConfig = registerAs(
     port: +process.env.POSTGRES_PORT,
     username: process.env.POSTGRES_USER,
     synchronize: !!process.env.POSTGRES_SYNCHRONIZE,
+    autoLoadEntities: true,
+    entities: [__dirname + '/../**/*.entity.ts'],
   }),
 );

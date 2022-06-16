@@ -12,8 +12,6 @@ import { DatabaseConfig } from '../config/database/database-config.interface';
         return {
           ...databaseConfig,
           type: 'postgres',
-          entities: [__dirname + '/../**/*.entity.ts'],
-          autoLoadEntities: true,
         };
       },
     }),
