@@ -7,4 +7,5 @@ export interface DatabaseConfig {
   synchronize: boolean;
   autoLoadEntities: boolean;
   entities: string[];
+  logging: boolean;
 }

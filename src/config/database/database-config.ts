@@ -13,5 +13,6 @@ export const databaseConfig = registerAs(
     synchronize: !!process.env.POSTGRES_SYNCHRONIZE,
     autoLoadEntities: true,
     entities: [__dirname + '/../**/*.entity.ts'],
+    logging: true,
   }),
 );
